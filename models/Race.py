@@ -31,7 +31,3 @@ class Race:
         
     def __str__(self):
         return f"{self.name} {self.year}"
-        
-race = Race(2024, 2, "Grand Prix of Monaco", "Monte Carlo", "https://www.formula1.com/en/racing/2024/Monaco.html")
-
-print(race.id)
