@@ -1,0 +1,53 @@
+[
+    {
+        "names": ["mercedes","mercedes-amg petronas f1 team", "mercedes amg petronas f1 team"],
+        "name": ["Mercedes"],
+        "id": 1
+    },
+    {
+        "names": ["red bull","red bull racing","red bull racing formula 1 team", "oracle red bull racing", "red bull racing honda rbpt"],
+        "name": ["Red Bull"],
+        "id": 2
+    },
+    {
+        "names": ["mclaren","mclaren f1 team","mclaren formula 1 team", "mclaren mercedes"],
+        "name": ["McLaren"],
+        "id": 3
+    },
+    {
+        "names": ["aston martin","aston martin f1 team","aston martin formula 1 team", "aston martin aramco mercedes", "aston martin aramco f1 team"],
+        "name": ["Aston Martin"],
+        "id": 4
+    },
+    {
+        "names": ["alpine","alpine f1 team","alpine formula 1 team", "alpine renault f1 team", "renault"],
+        "name": ["Alpine"],
+        "id": 5
+    },
+    {
+        "names": ["ferrari","scuderia ferrari","scuderia ferrari mission winnow", "scuderia ferrari mission winnow f1 team"],
+        "name": ["Ferrari"],
+        "id": 6
+    },
+    {
+        "names": ["alpha tauri","scuderia alpha tauri","scuderia alpha tauri honda", "scuderia alpha tauri honda f1 team", "visa cash app rb formula one team", "rb"],
+        "name": ["Alpha Tauri"],
+        "id": 7
+    },
+    {
+        "names": ["alfa romeo","alfa romeo racing","alfa romeo orlen", "sauber", "sauber f1 team", "kick sauber", "stake f1 team Kick Sauber"],
+        "name": ["Alfa Romeo"],
+        "id": 8
+    },
+    {
+        "names": ["haas","haas f1 team","haas formula 1 team", "haas f1 team ferrari"],
+        "name": ["Haas"],
+        "id": 9
+    },
+    {
+        "names": ["williams","williams racing","williams f1 team", "williams racing dorilton capital"],
+        "name": ["Williams"],
+        "id": 10
+    }
+
+]

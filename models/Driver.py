@@ -1,9 +1,12 @@
 from dataclasses import dataclass
-from models.Constructor import Constructor
+from .BaseModel import BaseModel
+from .Constructor import Constructor
 
 @dataclass
-class Driver:
-    driverId: str
-    driverName: str
-    constructorName: str
+class Driver(BaseModel):
+    id: str
+    name: str
+    shortName: str
+    nationality: str
+    constructorId: str
     constructor: Constructor
