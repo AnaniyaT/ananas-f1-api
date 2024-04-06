@@ -1,11 +1,22 @@
 from dataclasses import dataclass
-from models.Driver import Driver
-from models.Constructor import Constructor
+from .BaseModel import BaseModel
+from .Driver import Driver
+from .Constructor import Constructor
 
 @dataclass
-class Standings:
+class Standings(BaseModel):
+    year: int
     position: int
     points: int
+    
+    @staticmethod
+    def fromDict(**kwargs):
+        if kwargs["driverId"]:
+            return DriverStandings(**kwargs)
+        if kwargs["constructorName"]:
+            return ConstructorStandings(**kwargs)
+        else:
+            raise Exception("Invalid type")
 
 @dataclass
 class DriverStandings(Standings):
@@ -17,5 +28,6 @@ class DriverStandings(Standings):
     
 @dataclass
 class ConstructorStandings(Standings):
+    constructorId: str
     constructorName: str
     constructor: Constructor
