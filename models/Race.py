@@ -1,17 +1,19 @@
 from dataclasses import dataclass
-from models.RaceEvent import RaceEvent
+from .RaceEvent import RaceEvent
+from .Circuit import Circuit
 from typing import List
-from collections.abc import Mapping
+from .BaseModel import BaseModel
 
 @dataclass
-class Race:
+class Race(BaseModel):
     year: int
     round_: int
     name: str
     location: str
     trackMap: str
-    circuit: Mapping[str:str] = None
+    circuit: Circuit | None = None
     events: List[RaceEvent] = None
+    id: str = None
     
     def __post_init__(self):
         self.id = f"{self.year}_{self.round_}"
@@ -26,7 +28,7 @@ class Race:
     def addEvents(self, events: List[RaceEvent]) -> None:
         self.events.extend(events)
     
-    def setCircuit(self, circuit: Mapping[str:str]) -> None:
+    def setCircuit(self, circuit: Circuit) -> None:
         self.circuit = circuit
         
     def __str__(self):
