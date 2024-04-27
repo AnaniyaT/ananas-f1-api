@@ -1,3 +1,11 @@
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).parent.parent))
+
+from typing import Any
+from models import BaseModel
+
 
 class Utils:
     @staticmethod
@@ -24,3 +32,38 @@ class Utils:
                     dp[i][j] = min(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1]) + 1
 
         return dp[m][n]
+    
+    @staticmethod
+    def toJson(obj):
+        if isinstance(obj, type(BaseModel)):
+            return obj.toJson()
+        return str(obj)
+    
+    
+    @staticmethod
+    def clean(value: Any):
+        if isinstance(value, str):
+            return value.replace("'", "''")
+        return value
+    
+    
+    @staticmethod
+    def createSetStatement(**kwargs) -> str:
+        """
+        Creates a SET statement for an UPDATE query
+        """
+        statement = ", ".join([f"{key} = '{Utils.clean(value)}'" for key, value in kwargs.items() if value is not None])
+        
+        return f"SET {statement}"
+    
+    
+    @staticmethod
+    def getNameAndShortName(name: str) -> tuple[str, str]:
+        """
+        Returns the name and short name of a driver or constructor
+        """
+        name = name.split()
+        shortName = name[-1]
+        name = " ".join(name[:-1])
+        
+        return name, shortName
