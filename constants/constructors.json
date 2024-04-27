@@ -1,16 +1,16 @@
 [
     {
-        "names": ["mercedes","mercedes-amg petronas f1 team", "mercedes amg petronas f1 team"],
+        "names": ["mercedes", "mercedes amg", "mercedes petronas"],
         "name": ["Mercedes"],
         "id": 1
     },
     {
-        "names": ["red bull","red bull racing","red bull racing formula 1 team", "oracle red bull racing", "red bull racing honda rbpt"],
+        "names": ["red bull","red bull racing","red bull honda", "oracle red bull racing", "red bull rbpt"],
         "name": ["Red Bull"],
         "id": 2
     },
     {
-        "names": ["mclaren","mclaren f1 team","mclaren formula 1 team", "mclaren mercedes"],
+        "names": ["mclaren","mclaren f1 team","mclaren", "mclaren", "mclaren mercedes"],
         "name": ["McLaren"],
         "id": 3
     },
@@ -30,7 +30,7 @@
         "id": 6
     },
     {
-        "names": ["alpha tauri","scuderia alpha tauri","scuderia alpha tauri honda", "scuderia alpha tauri honda f1 team", "visa cash app rb formula one team", "rb"],
+        "names": ["alpha tauri","scuderia alpha tauri","scuderia alpha tauri honda", "scuderia alpha tauri honda f1 team", "visa cash app rb formula one team", "rb", "rb honda", "rb honda rbpt"],
         "name": ["Alpha Tauri"],
         "id": 7
     },
@@ -40,12 +40,12 @@
         "id": 8
     },
     {
-        "names": ["haas","haas f1 team","haas formula 1 team", "haas f1 team ferrari"],
+        "names": ["haas", "haas ferrari"],
         "name": ["Haas"],
         "id": 9
     },
     {
-        "names": ["williams","williams racing","williams f1 team", "williams racing dorilton capital"],
+        "names": ["williams","williams racing", "williams racing dorilton capital", "williams mercedes"],
         "name": ["Williams"],
         "id": 10
     }
