@@ -1,3 +1,4 @@
+import json
 import sys
 from pathlib import Path
 
@@ -11,6 +12,8 @@ import asyncio
 from models import Race
 from dataclasses import asdict
 
+
+# Where all the dirty work is done, Parser really took one for the team here
 class Parser:
     BASE_URL = "https://www.formula1.com"
     DRIVERS_STANDINGS_URL = BASE_URL + "/en/results.html/{year}/drivers.html"
@@ -47,20 +50,44 @@ class Parser:
     
     async def __getSoup(self, url: str) -> BeautifulSoup:
         html = await asyncio.to_thread(requests.get, url)
-        htmlText = html.text
+        htmlText = html.text.encode(html.encoding).decode('utf-8')
         soup = BeautifulSoup(htmlText, 'html.parser')
         
         return soup
     
     
     async def getRaceUrls(self, year: int) -> List[str]:
+        # caching shenanigans
+        cache_directory = Path(__file__).parent / "__cache__" / f"{year}_urls.json"
+        
+        if cache_directory.exists():
+            with open(cache_directory, 'r') as file:
+                cache_data = json.load(file)
+                last_updated = cache_data["last_updated"]
+                urls = cache_data["data"]
+                
+                if time.time() - last_updated < 86400 * 7: # 1 week
+                    print("cache hit")
+                    return urls
+        
+        else:
+            cache_directory.parent.mkdir(parents=True, exist_ok=True)
+        
+        # actual scraping
+            
         url = self.YEAR_SCHEDULE_URL.format(year=year)
         soup = await self.__getSoup(url)
         
         raceUrlAs = soup.find_all('a', class_='event-item-wrapper event-item-link')
         raceUrls = list(map(lambda x: self.BASE_URL + x['href'], raceUrlAs))
         
-        return raceUrls
+        filteredUrls = [url for url in raceUrls if (not "article" in url.lower()) and (not "pre-season" in url.lower())]
+        
+        # more caching shenanigans
+        with open(cache_directory, 'w') as file:
+            json.dump({"last_updated": time.time(), "data": filteredUrls}, file)
+        
+        return filteredUrls
     
     
     async def getCircuit(self, raceUrl: str) -> Dict[str, str]:
@@ -107,6 +134,7 @@ class Parser:
             
         return event
     
+    
     def __parseTable(self, table: BeautifulSoup, propMap: dict[str, str] = {}, initial: dict[str, str] = {}) -> List[dict[str, str]]:
         infos = [ele.lower() for ele in table.thead.tr.stripped_strings]
         
@@ -147,7 +175,7 @@ class Parser:
         }
         
         results = self.__parseTable(resultTable, propMap, initial={"eventId": eventId, "eventTitle": title})
-        
+
         return results
     
     def __isTrackMap(self, alt: str) -> bool:
@@ -173,7 +201,7 @@ class Parser:
         
         events = [self.__parseEvent(raceId ,eventDiv) for eventDiv in upcoming + completed]
         circuit = await self.getCircuit(url)
-        
+    
         race = {
             "year": year,
             "round_": round_,
