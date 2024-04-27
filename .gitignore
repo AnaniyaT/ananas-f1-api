@@ -3,3 +3,4 @@
 **/.vscode
 test.py
 result.json
+**/**.sqlite3
