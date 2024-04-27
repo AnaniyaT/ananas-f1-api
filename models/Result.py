@@ -3,22 +3,22 @@ from .BaseModel import BaseModel
 from .EventType import EventType
 from .Constructor import Constructor
 
-@dataclass
+@dataclass(kw_only=True)
 class Result(BaseModel):
     eventId: str
-    type_: EventType
     position: int
     driverId: str
-    driverName: str
-    constructorName: str
+    driverNumber: int
     laps: int
+    constructorId: str = None
     
     def __post_init__(self):
-        self.constructorId = Constructor.getConstructorId(self.constructorName)
+        self.type_ = EventType.getType(self.eventId.split("_")[2])
 
     @staticmethod
     def fromDict(**kwargs):
-        type_ = kwargs["type_"]
+        type_ = EventType.getType((kwargs["eventId"].split("_")[2]))
+        
         if type_ == EventType.RACE or type_ == EventType.SPRINT_RACE:
             return RaceResult(**kwargs)
         elif type_ == EventType.PRACTICE:
@@ -35,17 +35,16 @@ class Result(BaseModel):
 class RaceResult(Result):
     points: int
     time: str
-    constructorId: str = None
+    
 
 @dataclass
 class QualifyingResult(Result):
     q1: str
     q2: str
     q3: str
-    constructorId: str = None
+
 
 @dataclass
 class PracticeResult(Result):
     time: str
     gap: str
-    constructorId: str = None

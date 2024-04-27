@@ -11,25 +11,22 @@ class Race(BaseModel):
     name: str
     location: str
     trackMap: str
-    circuit: Circuit | None = None
-    events: List[RaceEvent] = None
-    id: str = None
+    circuitId:str
+    id_: str = None
     
     def __post_init__(self):
-        self.id = f"{self.year}_{self.round_}"
-        if self.events is None:
-            self.events = []
-        if self.circuit is None:
-            self.circuit = {}
-            
-    def addEvent(self, event: RaceEvent) -> None:
-        self.events.append(event)
+        self.id_ = self.formatRaceId(self.year, self.round_)
         
-    def addEvents(self, events: List[RaceEvent]) -> None:
-        self.events.extend(events)
-    
-    def setCircuit(self, circuit: Circuit) -> None:
-        self.circuit = circuit
+    def setCircuit(self, circuitId: str) -> None:
+        self.circuitId = circuitId
         
     def __str__(self):
         return f"{self.name} {self.year}"
+    
+    @staticmethod
+    def formatRaceId(year: int, round_: int) -> str:
+        return f"{year}_{round_}"
+    
+    @staticmethod
+    def fromDict(**kwargs) -> 'Race':
+        return Race(**kwargs)

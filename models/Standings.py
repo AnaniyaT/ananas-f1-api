@@ -11,9 +11,9 @@ class Standings(BaseModel):
     
     @staticmethod
     def fromDict(**kwargs):
-        if kwargs["driverId"]:
+        if kwargs.get("driverName"):
             return DriverStandings(**kwargs)
-        if kwargs["constructorName"]:
+        if kwargs.get("constructorName"):
             return ConstructorStandings(**kwargs)
         else:
             raise Exception("Invalid type")
@@ -21,13 +21,9 @@ class Standings(BaseModel):
 @dataclass
 class DriverStandings(Standings):
     driverId: str
-    driverName: str
-    constructorName: str
-    driver: Driver
-    
+    constructorId: str
+    nationality: str
     
 @dataclass
 class ConstructorStandings(Standings):
     constructorId: str
-    constructorName: str
-    constructor: Constructor
