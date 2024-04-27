@@ -5,9 +5,11 @@ from utils import Utils
 
 @dataclass
 class Constructor(BaseModel):
-    id: str
     name: str
-    nationality: str
+    id_: str = None
+    
+    def __post_init__(self):
+        self.id_ = Constructor.getConstructorId(self.name)
     
     @staticmethod
     def getConstructorId(name: str) -> str:
