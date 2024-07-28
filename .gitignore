@@ -1,6 +1,7 @@
 **/__pycache__/
 **/__cache__/
 **/.vscode
-test.py
+**/test.py
 result.json
 **/**.sqlite3
+**/.env
