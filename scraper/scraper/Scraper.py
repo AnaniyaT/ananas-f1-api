@@ -1,6 +1,5 @@
 import sys
 from pathlib import Path
-import time
 sys.path.append(str(Path(__file__).parent.parent))
 
 from db import Database
@@ -10,13 +9,16 @@ from .Parser import Parser
 from typing import Any, List, Dict, Tuple
 import asyncio
 
+from utils import Utils
 
 class Scraper:
     """
     Object that scrapes the data from the F1 website and stores it in the database
     """
     parser = Parser()
-    db = Database()
+    
+    def __init__(self, dbPath: str = None) -> None:
+        self.db = Database(path=dbPath)
     
     def __raceDictDigest(self, raceDict: Dict[str, Any]) -> Tuple[Race, List[RaceEvent], Circuit]:
         events = raceDict.pop("events")
@@ -35,7 +37,7 @@ class Scraper:
         circuit = Circuit.fromDict(**circuit)
         raceDict["circuitId"] = circuit.id_
         race = Race.fromDict(**raceDict)
-            
+
         return race, events, circuit
     
     
@@ -77,6 +79,20 @@ class Scraper:
             result["driverId"] = Driver.getDriverId(driverName)
             result["constructorId"] = Constructor.getConstructorId(result.pop("constructorName"))
             results.append(Result.fromDict(**result))
+            
+        allConstructorsExistInDb = all([
+            self.db.constructors.exists(id_=result.constructorId) for result in results
+        ])
+        
+        if not allConstructorsExistInDb:
+            await self.saveConstructorsAndStandings(RaceEvent.getEventYear(eventId))
+            
+        allDriversExistInDb = all([
+            self.db.drivers.exists(id_=result.driverId) for result in results
+        ])
+        
+        if not allDriversExistInDb:
+            await self.saveDriversAndStandings(RaceEvent.getEventYear(eventId))
         
         self.db.results.insertOrUpdateMany(results)
         self.db.commit()
@@ -118,8 +134,9 @@ class Scraper:
             
     async def saveRace(self, year: int, round_: int) -> None:
         urls = await self.parser.getRaceUrls(year)
+        print(urls)
         
-        raceDict = await self.parser.getRace(urls[round_ - 1], round)
+        raceDict = await self.parser.getRace(urls[round_ - 1], round_)
         
         race, events, circuit = self.__raceDictDigest(raceDict)
         
@@ -133,10 +150,17 @@ class Scraper:
     async def saveDriversAndStandings(self, year: int) -> List[DriverStandings]:
         standingsDicts = await self.parser.getDriverStandings(year)
         
+        allConstructorsExistInDb = all([
+            self.db.constructors.exists(name=standingDict["constructorName"]) for standingDict in standingsDicts
+        ])
+        
+        if not allConstructorsExistInDb:
+            await self.saveConstructorsAndStandings(year)
+        
         drivers = [
             Driver(
-                name=" ".join(standingDict["driverName"].split(" ")[:-1]),
-                shortName=standingDict["driverName"].split(" ")[-1],
+                name=Utils.getNameAndShortName(standingDict["driverName"])[0],
+                shortName=Utils.getNameAndShortName(standingDict["driverName"])[1],
                 nationality=standingDict["nationality"],
                 constructorId=Constructor.getConstructorId(standingDict["constructorName"])
             )
@@ -149,7 +173,7 @@ class Scraper:
                 year=year,
                 position=standingDict["position"],
                 points=standingDict["points"],
-                driverId=Driver.getDriverId(standingDict["driverName"]),
+                driverId=Driver.getDriverId(Utils.getNameAndShortName(standingDict["driverName"])[0]),
                 constructorId=Constructor.getConstructorId(standingDict["constructorName"]),
             )
             

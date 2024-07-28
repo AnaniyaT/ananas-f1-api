@@ -1,7 +1,7 @@
 from sqlite3 import Cursor
-from .GenericDb.ForeignKey import FK
-from .GenericDb.PrimaryKey import PK
-from .GenericDb import GenericDatabase, Index
+from .genericDb.ForeignKey import FK, FKActions
+from .genericDb.PrimaryKey import PK
+from .genericDb import GenericDatabase, Index
 from models import DriverStandings, Driver
 
 class DriverStandingsDatabase(GenericDatabase[DriverStandings]):
@@ -11,5 +11,5 @@ class DriverStandingsDatabase(GenericDatabase[DriverStandings]):
             DriverStandings,
             PK(DriverStandings, ["year", "position"]),
             "driverStandings",
-            [FK(DriverStandings, "driverId", Driver, "drivers", "id_")],
+            [FK(DriverStandings, "driverId", Driver, "drivers", "id_", onDelete=FKActions.CASCADE)],
         )

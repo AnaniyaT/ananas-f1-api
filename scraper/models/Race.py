@@ -20,8 +20,9 @@ class Race(BaseModel):
     def setCircuit(self, circuitId: str) -> None:
         self.circuitId = circuitId
         
-    def __str__(self):
-        return f"{self.name} {self.year}"
+    # def __str__(self):
+    #     # return f"{self.name} {self.year}"
+    #     pass
     
     @staticmethod
     def formatRaceId(year: int, round_: int) -> str:

@@ -2,8 +2,6 @@ from dataclasses import dataclass
 
 from .BaseModel import BaseModel
 from .EventType import EventType
-from .Result import Result
-from typing import List
 
 @dataclass
 class RaceEvent(BaseModel):
@@ -21,3 +19,15 @@ class RaceEvent(BaseModel):
     @staticmethod
     def formatEventId(raceId: str, title: str) -> str:
         return f"{raceId}_{title}".replace(" ", "_").upper()
+    
+    @staticmethod
+    def getEventTitle(eventId: str) -> str:
+        return " ".join(eventId.split("_")[2:])
+
+    @staticmethod
+    def getEventYear(eventId: str) -> int:
+        return int(eventId.split("_")[0])
+    
+    @staticmethod
+    def getEventRound(eventId: str) -> int:
+        return int(eventId.split("_")[1])

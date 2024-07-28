@@ -1,6 +1,6 @@
 import sqlite3
 from models import Constructor
-from .GenericDb import GenericDatabase, PK, FK
+from .genericDb import GenericDatabase, PK, FK
 
 class ConstructorDatabase(GenericDatabase[Constructor]):
     def __init__(self, cursor: sqlite3.Cursor) -> None:

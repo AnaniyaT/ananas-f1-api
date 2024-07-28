@@ -22,7 +22,6 @@ class Standings(BaseModel):
 class DriverStandings(Standings):
     driverId: str
     constructorId: str
-    nationality: str
     
 @dataclass
 class ConstructorStandings(Standings):

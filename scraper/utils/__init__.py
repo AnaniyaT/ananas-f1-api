@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from collections import deque
 
 sys.path.append(str(Path(__file__).parent.parent))
 
@@ -32,6 +33,36 @@ class Utils:
                     dp[i][j] = min(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1]) + 1
 
         return dp[m][n]
+    
+    @staticmethod
+    def topologicalSort(graph: dict[str, list[str]]) -> list[str]:
+        """
+        Returns a topological sort of a graph
+        """
+        nodes = list(graph.keys())
+        inDegree = {node: 0 for node in nodes}
+        
+        for node in nodes:
+            for neighbor in graph.get(node, []):
+                inDegree[neighbor] = inDegree.get(neighbor, 0) + 1
+                
+        queue = deque([node for node in nodes if inDegree[node] == 0])
+        
+        topologicalOrder = []
+        
+        while queue:
+            node = queue.pop()
+            topologicalOrder.append(node)
+            
+            for neighbor in graph.get(node, []):
+                inDegree[neighbor] -= 1
+                if inDegree[neighbor] == 0:
+                    queue.appendleft(neighbor)
+                    
+        if len(topologicalOrder) != len(nodes):
+            raise ValueError("Graph has a cycle")
+        
+        return topologicalOrder
     
     @staticmethod
     def toJson(obj):

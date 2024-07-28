@@ -5,7 +5,7 @@ from models import BaseModel
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 from typing import Generic, TypeVar, List, Tuple
-from .ForeignKey import FK
+from .ForeignKey import FK, FKActions
 from .PrimaryKey import PK
 from .Index import Index
 import sqlite3
@@ -30,7 +30,7 @@ class GenericDatabase(Generic[T]):
         # table info
         self.tableName = tableName if tableName else type_.__name__
         self.pk = primaryKey
-        self.foreignKeys = foreignKeys
+        self.fks = foreignKeys
         self.indexes = indexes
         
         # statements 

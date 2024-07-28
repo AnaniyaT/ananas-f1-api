@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from .BaseModel import BaseModel
 from .EventType import EventType
 from .Constructor import Constructor
+from .RaceEvent import RaceEvent
 
 @dataclass(kw_only=True)
 class Result(BaseModel):
@@ -13,11 +14,11 @@ class Result(BaseModel):
     constructorId: str = None
     
     def __post_init__(self):
-        self.type_ = EventType.getType(self.eventId.split("_")[2])
+        self.type_ = EventType.getType(RaceEvent.getEventTitle(self.eventId))
 
     @staticmethod
     def fromDict(**kwargs):
-        type_ = EventType.getType((kwargs["eventId"].split("_")[2]))
+        type_ = EventType.getType(RaceEvent.getEventTitle(kwargs["eventId"]))
         
         if type_ == EventType.RACE or type_ == EventType.SPRINT_RACE:
             return RaceResult(**kwargs)
@@ -29,7 +30,7 @@ class Result(BaseModel):
             raise ValueError("Invalid type")
         
     def __str__(self) -> str:
-        return f"{self.position} - {self.driverName} - {self.constructorName} - {self.type_}"
+        return f"{self.position} - {self.driverNumber} - {self.constructorId} - {self.type_}"
             
 @dataclass
 class RaceResult(Result):

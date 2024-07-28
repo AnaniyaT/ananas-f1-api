@@ -1,6 +1,6 @@
 import sqlite3
 from models import Race, Circuit
-from .GenericDb import GenericDatabase, PK, FK, Index
+from .genericDb import GenericDatabase, PK, FK, FKActions, Index
 
 class RaceDatabase(GenericDatabase[Race]):
     def __init__(self, cursor: sqlite3.Cursor) -> None:
@@ -9,8 +9,6 @@ class RaceDatabase(GenericDatabase[Race]):
             Race,
             PK(Race, ["id_"]),
             "races",
-            [FK(Race, "circuitId", Circuit, "circuits", "id_")],
+            [FK(Race, "circuitId", Circuit, "circuits", "id_", onDelete=FKActions.SET_NULL)],
             [Index(Race, "circuitIndex", "races", ["circuitId"])]
         )
-            
-            

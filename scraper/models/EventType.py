@@ -11,7 +11,7 @@ class EventType(Enum):
     def getType(eventTitle: str) -> 'EventType':
         if eventTitle.lower() == "sprint":
             return EventType.SPRINT_RACE
-        if "sprint" in eventTitle.lower():
+        if "sprint" in eventTitle.lower() and "qualifying" in eventTitle.lower():
             return EventType.SPRINT_QUALIFYING
         if "practice" in eventTitle.lower():
             return EventType.PRACTICE

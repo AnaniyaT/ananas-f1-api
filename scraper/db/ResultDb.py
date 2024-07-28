@@ -2,7 +2,7 @@
 import sqlite3
 from typing import List
 from models import Constructor, RaceEvent, Result, EventType, QualifyingResult, RaceResult, PracticeResult, Driver
-from .GenericDb import GenericDatabase, PK, FK, Index
+from .genericDb import GenericDatabase, PK, FK, Index, FKActions
 
 class ResultDatabase():
     def __getIndices(self, tableName: str) -> List[Index]:
@@ -16,19 +16,18 @@ class ResultDatabase():
         pk = PK(Result, ["eventId", "driverId"])
         self.pk = pk
         
-        fks = [
-            FK(Result, "eventId", RaceEvent, "events", "id_"),
-            FK(Result, "driverId", Driver, "drivers", "id_"),
-            FK(Result, "constructorId", Constructor, "constructors", "id_"),
+        self.fks = [
+            FK(Result, "eventId", RaceEvent, "events", "id_", onDelete=FKActions.CASCADE),
+            FK(Result, "driverId", Driver, "drivers", "id_", onDelete=FKActions.CASCADE),
+            FK(Result, "constructorId", Constructor, "constructors", "id_", onDelete=FKActions.SET_NULL),
         ]
-
         
         self.race = GenericDatabase[RaceResult](
             cursor,
             RaceResult,
             pk,
             "raceResults",
-            fks,
+            self.fks,
             self.__getIndices("raceResults")
         )
         
@@ -37,7 +36,7 @@ class ResultDatabase():
             QualifyingResult,
             pk,
             "qualifyingResults",
-            fks,
+            self.fks,
             self.__getIndices("qualifyingResults")
         )
         
@@ -46,7 +45,7 @@ class ResultDatabase():
             PracticeResult,
             pk,
             "practiceResults",
-            fks,
+            self.fks,
             self.__getIndices("practiceResults")
         )
         
@@ -84,13 +83,13 @@ class ResultDatabase():
     
     
     def getByEventId(self, eventId: str) -> List[Result]:
-        eventTitle = eventId.split("_")[2]
+        eventTitle = RaceEvent.getEventTitle(eventId)
         type_ = EventType.getType(eventTitle)
         
         if type_ == EventType.PRACTICE:
             return self.practice.getByKeysMany(eventId=eventId)
         
-        elif type_ == EventType.QUALIFYING:
+        elif type_ == EventType.QUALIFYING or type_ == EventType.SPRINT_QUALIFYING:
             return self.quali.getByKeysMany(eventId=eventId)
         
         return self.race.getByKeysMany(eventId=eventId)
@@ -100,7 +99,7 @@ class ResultDatabase():
         if result.type_ == EventType.PRACTICE:
             return self.practice.insert(result)
         
-        if result.type_ == EventType.QUALIFYING:
+        if result.type_ == EventType.QUALIFYING or result.type_ == EventType.SPRINT_QUALIFYING:
             return self.quali.insert(result)
         
         self.race.insert(result)
@@ -114,7 +113,7 @@ class ResultDatabase():
         for result in results:
             if result.type_ == EventType.RACE:
                 races.append(result)
-            elif result.type_ == EventType.QUALIFYING:
+            elif result.type_ == EventType.QUALIFYING or result.type_ == EventType.SPRINT_QUALIFYING:
                 qualis.append(result)
             else:
                 practices.append(result)
@@ -128,7 +127,7 @@ class ResultDatabase():
         if result.type_ == EventType.PRACTICE:
             return self.practice.update(result)
         
-        if result.type_ == EventType.QUALIFYING:
+        if result.type_ == EventType.QUALIFYING or result.type_ == EventType.SPRINT_QUALIFYING:
             return self.quali.update(result)
         
         self.race.update(result)
@@ -136,12 +135,12 @@ class ResultDatabase():
         
     def exists(self, **kwargs) -> bool:
         if "eventId" in kwargs:
-            eventTitle = kwargs["eventId"].split("_")[2]
+            eventTitle = RaceEvent.getEventTitle(kwargs["eventId"])
             type_ = EventType.getType(eventTitle)
             
             if type_ == EventType.PRACTICE:
                 return self.practice.exists(**kwargs)
-            if type_ == EventType.QUALIFYING:
+            if type_ == EventType.QUALIFYING or type_ == EventType.SPRINT_QUALIFYING:
                 return self.quali.exists(**kwargs)
             
             return self.race.exists(**kwargs)

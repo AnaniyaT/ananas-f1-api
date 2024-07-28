@@ -4,6 +4,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent))
 
+import re
 import requests
 from bs4 import BeautifulSoup
 from typing import *
@@ -49,24 +50,25 @@ class Parser:
     
     
     async def __getSoup(self, url: str) -> BeautifulSoup:
-        html = await asyncio.to_thread(requests.get, url)
+        headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+        html = await asyncio.to_thread(requests.get, url, headers=headers)
         htmlText = html.text.encode(html.encoding).decode('utf-8')
         soup = BeautifulSoup(htmlText, 'html.parser')
         
         return soup
     
     
-    async def getRaceUrls(self, year: int) -> List[str]:
+    async def getRaceUrls(self, year: int, use_cache: bool = True) -> List[str]:
         # caching shenanigans
         cache_directory = Path(__file__).parent / "__cache__" / f"{year}_urls.json"
         
-        if cache_directory.exists():
+        if cache_directory.exists() and use_cache:
             with open(cache_directory, 'r') as file:
                 cache_data = json.load(file)
                 last_updated = cache_data["last_updated"]
                 urls = cache_data["data"]
                 
-                if time.time() - last_updated < 86400 * 7: # 1 week
+                if time.time() - last_updated < 3600 * 24 * 7 and urls: # 1 week
                     print("cache hit")
                     return urls
         
@@ -78,10 +80,12 @@ class Parser:
         url = self.YEAR_SCHEDULE_URL.format(year=year)
         soup = await self.__getSoup(url)
         
-        raceUrlAs = soup.find_all('a', class_='event-item-wrapper event-item-link')
+        wrapperDiv = soup.find('div', class_='f1-inner-wrapper')
+        
+        raceUrlAs = wrapperDiv.find_all('a', href=re.compile(r'^/en/racing/\d{4}/[\w-]+$'))
         raceUrls = list(map(lambda x: self.BASE_URL + x['href'], raceUrlAs))
         
-        filteredUrls = [url for url in raceUrls if (not "article" in url.lower()) and (not "pre-season" in url.lower())]
+        filteredUrls = [url for url in raceUrls if not "pre-season" in url.lower()]
         
         # more caching shenanigans
         with open(cache_directory, 'w') as file:
@@ -91,13 +95,10 @@ class Parser:
     
     
     async def getCircuit(self, raceUrl: str) -> Dict[str, str]:
-        splitUrl = raceUrl.split(".")
-        splitUrl.pop()
-        url = ".".join(splitUrl) + "/Circuit.html"
+        url = raceUrl + "/circuit"
         
         soup = await self.__getSoup(url)
-        flag = soup.find('span', class_='f1-flag--wrapper')
-        trackName = flag.next_sibling.next_sibling.string
+        trackName = soup.find('h2', class_='f1-heading').string
         
         stats = soup.find_all('div', class_='f1-stat')
         
@@ -178,8 +179,8 @@ class Parser:
 
         return results
     
-    def __isTrackMap(self, alt: str) -> bool:
-        return alt and ('carbon.png' in alt or 'carbon_original.png' in alt.lower())
+    def __isTrackMap(self, attr: str) -> bool:
+        return attr and ('carbon' in attr or 'carbon' in attr.lower())
     
     
     def __getYear(self, url: str) -> int:
@@ -191,9 +192,9 @@ class Parser:
         soup = await self.__getSoup(url)
         
         year = self.__getYear(url)
-        raceLocation = soup.find('h1', class_='race-location').contents[0]
-        raceName = soup.find('h2', class_='f1--s').string
-        trackMapImg = soup.find('img', alt=self.__isTrackMap)['data-src']
+        raceLocation = soup.find('h1').contents[0]
+        raceName = soup.find('h2', class_='f1-heading').string
+        trackMapImg = soup.find('img', src=self.__isTrackMap)['src']
         raceId = Race.formatRaceId(year, round_)
 
         upcoming = soup.find_all('div', class_='upcoming')

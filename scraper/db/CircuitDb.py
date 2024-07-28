@@ -1,7 +1,7 @@
 
 import sqlite3
 from models import Circuit
-from .GenericDb import GenericDatabase, PK
+from .genericDb import GenericDatabase, PK
 
 
 class CircuitDatabase(GenericDatabase[Circuit]):
