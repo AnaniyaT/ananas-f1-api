@@ -1,0 +1,35 @@
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# custom cache directories
+*/__cache__/
+
+# environment variables files
+.env
+
+# virtual environments
+.venv/
+env/
+venv/
+
+# version control directories and files
+.git/
+.gitignore
+
+# Docker-related files
+Dockerfile
+docker-compose.yml
+
+# logs
+*.log
+
+# database files
+*.db
+*.sqlite3
+
+# IDE and editor specific files
+.vscode/
+.idea/
+*.swp

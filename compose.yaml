@@ -1,0 +1,23 @@
+services:
+  web:
+    build: api
+    ports:
+      - "8080:8080"
+    volumes:
+      - f1database:/app/database
+    environment:
+      - PORT=8080
+      - DB_PATH=./database/f1db.sqlite3
+
+  scraper:
+    build: scraper
+    ports:
+      - "3000:3000"
+    volumes:
+      - f1database:/app/database
+    environment:
+      - PORT=3000
+      - DB_PATH=./database/f1db.sqlite3
+
+volumes:
+  f1database:
