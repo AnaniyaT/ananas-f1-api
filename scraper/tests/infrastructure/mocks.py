@@ -86,6 +86,17 @@ class MockRequests:
         if isinstance(config, os.PathLike):
             config = self.__read_config(config)
         self.config = MockConfig(config)
+        
+        self.typeMap = {
+            RequestType.YEAR_SCHEDULE: MockResponse.fromFile(*self.config.schedulePage),
+            RequestType.DRIVER_STANDINGS: MockResponse.fromFile(*self.config.driverStandingsPage),
+            RequestType.CONSTRUCTROR_STANDINGS: MockResponse.fromFile(*self.config.constructorStandingsPage),
+            RequestType.RACE_WEEKEND: MockResponse.fromFile(*self.config.regularWeekendPage),
+            RequestType.CIRCUIT: MockResponse.fromFile(*self.config.circuitPage),
+            RequestType.RACE_RESULT: MockResponse.fromFile(*self.config.raceResultPage),
+            RequestType.QUALIFYING_RESULT: MockResponse.fromFile(*self.config.qualifyingResultPage),
+            RequestType.PRACTICE_RESULT: MockResponse.fromFile(*self.config.practiceResultPage)
+        } 
             
     def __read_config(self, path: os.PathLike) -> dict[str, tuple[str, str]]:
         with open(str(path)) as f:
@@ -93,20 +104,8 @@ class MockRequests:
 
     def get(self, url: str, headers: dict[str, any] = None) -> MockResponse:
         reqType = RequestType.parseType(url)
-        pages = self.config
         
-        typeMap = {
-            RequestType.YEAR_SCHEDULE: MockResponse.fromFile(*pages.schedulePage),
-            RequestType.DRIVER_STANDINGS: MockResponse.fromFile(*pages.driverStandingsPage),
-            RequestType.CONSTRUCTROR_STANDINGS: MockResponse.fromFile(*pages.constructorStandingsPage),
-            RequestType.RACE_WEEKEND: MockResponse.fromFile(*pages.regularWeekendPage),
-            RequestType.CIRCUIT: MockResponse.fromFile(*pages.circuitPage),
-            RequestType.RACE_RESULT: MockResponse.fromFile(*pages.raceResultPage),
-            RequestType.QUALIFYING_RESULT: MockResponse.fromFile(*pages.qualifyingResultPage),
-            RequestType.PRACTICE_RESULT: MockResponse.fromFile(*pages.practiceResultPage)
-        } 
-        
-        return typeMap[reqType]
+        return self.typeMap[reqType]
     
     def getSprintRace(self) -> MockResponse:
         return MockResponse(*self.config.sprintWeekendPage)
