@@ -21,14 +21,8 @@ class Scraper:
         self.db = Database(path=dbPath)
     
     def __raceDictDigest(self, raceDict: Dict[str, Any]) -> Tuple[Race, List[RaceEvent], Circuit]:
-        events = raceDict.pop("events")
-
-        for idx, event in enumerate(events):
-            event["type_"] = EventType.getType(event["title"]).value
-            event.pop("resultLink")
-            events[idx] = RaceEvent(**event)
-            
         circuit = raceDict.pop("circuit")
+        events = raceDict.pop("events")
         
         circuit["numberOfLaps"] = int(circuit["numberOfLaps"])
         circuit["length"] = float(circuit["length"].split()[0])
@@ -37,6 +31,12 @@ class Scraper:
         circuit = Circuit.fromDict(**circuit)
         raceDict["circuitId"] = circuit.id_
         race = Race.fromDict(**raceDict)
+        
+        for idx, event in enumerate(events):
+            event["type_"] = EventType.getType(event["title"]).value
+            event["raceId"] = race.id_
+            event.pop("resultLink")
+            events[idx] = RaceEvent(**event)
 
         return race, events, circuit
     
@@ -134,7 +134,6 @@ class Scraper:
             
     async def saveRace(self, year: int, round_: int) -> None:
         urls = await self.parser.getRaceUrls(year)
-        print(urls)
         
         raceDict = await self.parser.getRace(urls[round_ - 1], round_)
         
