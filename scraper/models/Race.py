@@ -6,6 +6,7 @@ from .BaseModel import BaseModel
 
 @dataclass
 class Race(BaseModel):
+    f1Id: str
     year: int
     round_: int
     name: str

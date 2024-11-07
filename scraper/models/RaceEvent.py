@@ -7,10 +7,9 @@ from .EventType import EventType
 class RaceEvent(BaseModel):
     raceId: str
     title: str
-    date: str
+    startDate: str
+    endDate: str
     type_: EventType
-    time: str
-    gmtOffset: str
     id_: str = None
     
     def __post_init__(self):
