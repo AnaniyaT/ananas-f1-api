@@ -1,0 +1,39 @@
+{
+    "year": 2023,
+    "schedule_page": [
+        "tests\\test_data\\html\\2023_schedule.html",
+        "utf-8"
+    ],
+    "driver_standings_page": [
+        "tests\\test_data\\html\\2023_driver_standings.html",
+        "utf-8"
+    ],
+    "constructor_standings_page": [
+        "tests\\test_data\\html\\2023_constructor_standings.html",
+        "utf-8"
+    ],
+    "regular_weekend_page": [
+        "tests\\test_data\\html\\2023_regular_weekend_ksa.html",
+        "utf-8"
+    ],
+    "sprint_weekend_page": [
+        "tests\\test_data\\html\\2023_sprint_weekend_br.html",
+        "utf-8"
+    ],
+    "circuit_page": [
+        "tests\\test_data\\html\\2023_circuit_br.html",
+        "utf-8"
+    ],
+    "practice_result_page": [
+        "tests\\test_data\\html\\2023_practice_result_br.html",
+        "utf-8"
+    ],
+    "qualifying_result_page": [
+        "tests\\test_data\\html\\2023_qualifying_result_br.html",
+        "utf-8"
+    ],
+    "race_result_page": [
+        "tests\\test_data\\html\\2023_race_result_br.html",
+        "utf-8"
+    ]
+}
